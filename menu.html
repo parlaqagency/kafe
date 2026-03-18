@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>KONTRBUS — Menü</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold:    #C9A84C;
+    --gold2:   #E8C97A;
+    --dark:    #0D0806;
+    --dark2:   #160C06;
+    --cream:   #F5EFE6;
+    --cream2:  #E8DDD0;
+    --brown:   #3A2010;
+  }
+
+  body {
+    background: #888;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── PAGE SETUP ── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto 12mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── SHARED DECORATIVES ── */
+  .gold-line-h {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+  .gold-line-v {
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  }
+  .corner {
+    position: absolute;
+    width: 32px; height: 32px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .corner-tl { top: 14mm; left: 14mm; border-width: 1px 0 0 1px; }
+  .corner-tr { top: 14mm; right: 14mm; border-width: 1px 1px 0 0; }
+  .corner-bl { bottom: 14mm; left: 14mm; border-width: 0 0 1px 1px; }
+  .corner-br { bottom: 14mm; right: 14mm; border-width: 0 1px 1px 0; }
+
+  /* ── PAGE 1: COVER ── */
+  .cover {
+    background: var(--dark);
+    justify-content: space-between;
+    align-items: center;
+    padding: 20mm 18mm;
+  }
+  .cover-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6mm;
+    flex: 1;
+    justify-content: center;
+  }
+  .cover-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .cover-brand {
+    font-family: 'Oswald', sans-serif;
+    font-size: 60pt;
+    font-weight: 700;
+    color: var(--cream);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-align: center;
+  }
+  .cover-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13pt;
+    font-style: italic;
+    color: rgba(245,239,230,0.55);
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+  .cover-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 80mm;
+  }
+  .cover-divider-dot {
+    width: 5px; height: 5px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cover-menu-word {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36pt;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: var(--cream2);
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .cover-year {
+    font-family: 'Oswald', sans-serif;
+    font-size: 7.5pt;
+    letter-spacing: 0.3em;
+    color: rgba(201,168,76,0.5);
+  }
+
+  /* Cover background coffee bean texture effect */
+  .cover-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 30%, rgba(201,168,76,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 80% 60% at 50% 80%, rgba(201,168,76,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-img-area {
+    width: 100%;
+    height: 65mm;
+    position: relative;
+    overflow: hidden;
+    border-radius: 2mm;
+    margin: 8mm 0;
+  }
+  .cover-img-area img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 60%;
+    filter: brightness(0.6) sepia(0.3);
+  }
+  .cover-img-area::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, var(--dark) 100%);
+  }
+  .cover-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3mm;
+    padding-top: 6mm;
+    border-top: 1px solid rgba(201,168,76,0.15);
+    width: 100%;
+  }
+  .cover-address {
+    font-family: 'Inter', sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.12em;
+    color: rgba(245,239,230,0.4);
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .cover-instagram {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9pt;
+    font-style: italic;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── INNER PAGES ── */
+  .inner-page {
+    padding: 18mm 16mm 16mm;
+  }
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 8mm;
+    gap: 3mm;
+  }
+  .page-num {
+    position: absolute;
+    top: 14mm; right: 20mm;
+    font-family: 'Oswald', sans-serif;
+    font-size: 7pt;
+    color: rgba(201,168,76,0.4);
+    letter-spacing: 0.2em;
+  }
+  .section-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28pt;
+    font-weight: 600;
+    color: var(--cream);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1;
+  }
+  .section-title-italic {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11pt;
+    font-style: italic;
+    color: rgba(245,239,230,0.45);
+    text-align: center;
+    letter-spacing: 0.06em;
+    font-weight: 300;
+  }
+  .header-rule {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 60mm;
+  }
+  .header-rule-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; flex-shrink:0; }
+
+  /* ── MENU ITEMS ── */
+  .menu-items { display: flex; flex-direction: column; gap: 0; }
+
+  .menu-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    padding: 5mm 0;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    position: relative;
+  }
+  .menu-item:first-child { border-top: 1px solid rgba(201,168,76,0.1); }
+
+  .item-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 7pt;
+    color: rgba(201,168,76,0.35);
+    letter-spacing: 0.15em;
+    width: 8mm;
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .item-body { flex: 1; display: flex; flex-direction: column; gap: 1.5mm; padding-left: 2mm; }
+  .item-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13pt;
+    font-weight: 500;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .item-note {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9pt;
+    font-style: italic;
+    color: rgba(245,239,230,0.5);
+    letter-spacing: 0.04em;
+    font-weight: 300;
+  }
+  .item-dots {
+    flex: 1;
+    height: 1px;
+    margin: 0 4mm;
+    background-image: repeating-linear-gradient(
+      to right,
+      rgba(201,168,76,0.25) 0px,
+      rgba(201,168,76,0.25) 2px,
+      transparent 2px,
+      transparent 7px
+    );
+    align-self: flex-end;
+    margin-bottom: 3mm;
+    min-width: 10mm;
+  }
+  .item-price {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12pt;
+    font-weight: 400;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    align-self: flex-end;
+    margin-bottom: 0.5mm;
+    white-space: nowrap;
+  }
+
+  /* 2-column layout for cold drinks (many items) */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10mm; }
+  .two-col .menu-item { padding: 4mm 0; }
+  .two-col .menu-item:first-child { border-top: 1px solid rgba(201,168,76,0.1); }
+  .two-col .col-items { display: flex; flex-direction: column; }
+
+  /* ── BLEND HIGHLIGHT BAR ── */
+  .blend-bar {
+    background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.03) 100%);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 1.5mm;
+    padding: 5mm 8mm;
+    margin: 6mm 0 8mm;
+    display: flex;
+    align-items: center;
+    gap: 8mm;
+  }
+  .blend-bar-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .blend-bar-items {
+    display: flex;
+    gap: 0;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+  .blend-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9pt;
+    font-style: italic;
+    color: var(--cream2);
+    padding: 0 6mm;
+    border-right: 1px solid rgba(201,168,76,0.2);
+    letter-spacing: 0.04em;
+  }
+  .blend-pill:last-child { border-right: none; }
+
+  /* ── PAGE 4: DESSERTS + INFO ── */
+  .info-block {
+    margin-top: 10mm;
+    padding-top: 8mm;
+    border-top: 1px solid rgba(201,168,76,0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8mm;
+  }
+  .info-col { display: flex; flex-direction: column; gap: 2.5mm; }
+  .info-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 6.5pt;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .info-val {
+    font-family: 'Inter', sans-serif;
+    font-size: 8pt;
+    color: rgba(245,239,230,0.65);
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+  }
+
+  /* ── FOOTER BAR (all inner pages) ── */
+  .page-footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 10mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18mm;
+    border-top: 1px solid rgba(201,168,76,0.1);
+  }
+  .page-footer-brand {
+    font-family: 'Oswald', sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.25em;
+    color: rgba(201,168,76,0.4);
+    text-transform: uppercase;
+  }
+  .page-footer-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 7pt;
+    font-style: italic;
+    color: rgba(245,239,230,0.25);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: none; }
+    .page { margin: 0; page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     PAGE 1 — COVER
+════════════════════════════════════════ -->
+<div class="page cover">
+  <div class="cover-bg-pattern"></div>
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <div class="cover-top">
+    <!-- Logo placeholder -->
+    <div style="width:22mm;height:22mm;border:1px solid rgba(201,168,76,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:2mm;">
+      <img src="assets/logo.png" alt="KONTRBUS" style="width:18mm;height:18mm;object-fit:contain;" onerror="this.style.display='none'">
+    </div>
+
+    <span class="cover-eyebrow">Specialty Coffee · İzmir</span>
+
+    <div class="cover-brand">KONTRBUS</div>
+
+    <div class="cover-divider">
+      <div class="gold-line-h" style="flex:1;"></div>
+      <div class="cover-divider-dot"></div>
+      <div class="gold-line-h" style="flex:1;"></div>
+    </div>
+
+    <div class="cover-menu-word">Menü</div>
+
+    <div class="cover-img-area">
+      <img src="assets/images/bouncecard/green_coffee_beans_1773503631543.jpeg" alt="">
+    </div>
+
+    <p class="cover-sub">Her çekirdeğin bir hikayesi var.</p>
+
+    <span class="cover-year">© 2024 · KONTRBUS COFFEE</span>
+  </div>
+
+  <div class="cover-bottom">
+    <span class="cover-address">Kazımdirik, 364/3. Sk. No:20 · Bornova / İzmir · 08:30 — 01:00</span>
+    <span class="cover-instagram">@kontrbuscoffee</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 2 — SICAK İÇECEKLER
+════════════════════════════════════════ -->
+<div class="page inner-page">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <span class="page-num">02</span>
+
+  <div class="page-header">
+    <span class="section-eyebrow">Kahve Serisi</span>
+    <h2 class="section-title">Sıcak İçecekler</h2>
+    <p class="section-title-italic">Taze çekilmiş, özenle demlenmiş</p>
+    <div class="header-rule">
+      <div class="gold-line-h" style="flex:1;"></div>
+      <div class="header-rule-dot"></div>
+      <div class="gold-line-h" style="flex:1;"></div>
+    </div>
+  </div>
+
+  <!-- Blend highlight -->
+  <div class="blend-bar">
+    <span class="blend-bar-label">İmza Blendlerimiz</span>
+    <div class="blend-bar-items">
+      <span class="blend-pill">Moab Blend</span>
+      <span class="blend-pill">House Blend</span>
+      <span class="blend-pill">Colombia</span>
+      <span class="blend-pill">Jersey Blend</span>
+    </div>
+  </div>
+
+  <div class="menu-items">
+
+    <div class="menu-item">
+      <span class="item-num">01</span>
+      <div class="item-body">
+        <span class="item-name">Espresso</span>
+        <span class="item-note">Koyu çikolata · Karamel · Yoğun</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">02</span>
+      <div class="item-body">
+        <span class="item-name">Double Espresso</span>
+        <span class="item-note">Güçlü · Konsantre · Saf kahve</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">03</span>
+      <div class="item-body">
+        <span class="item-name">Americano</span>
+        <span class="item-note">Temiz · Hafif · Uzun</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">04</span>
+      <div class="item-body">
+        <span class="item-name">Latte</span>
+        <span class="item-note">Kremamsı · Dengeli · Kadifemsi</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">05</span>
+      <div class="item-body">
+        <span class="item-name">Cappuccino</span>
+        <span class="item-note">Yoğun köpük · Klasik · Güçlü</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">06</span>
+      <div class="item-body">
+        <span class="item-name">Flat White</span>
+        <span class="item-note">Mikro köpük · Yoğun · Avustralya stili</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">07</span>
+      <div class="item-body">
+        <span class="item-name">Filtre Kahve</span>
+        <span class="item-note">Açık · Çiçeksi · Saf — V60 / Chemex</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">08</span>
+      <div class="item-body">
+        <span class="item-name">Turkish Coffee</span>
+        <span class="item-note">Geleneksel · Köpüklü · Kadife</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+  </div>
+
+  <!-- Note -->
+  <div style="margin-top:8mm;display:flex;align-items:flex-start;gap:4mm;padding:4mm 6mm;border:1px solid rgba(201,168,76,0.12);border-radius:1.5mm;">
+    <span style="color:var(--gold);font-size:7pt;margin-top:0.5mm;">✦</span>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:8.5pt;color:rgba(245,239,230,0.4);line-height:1.6;letter-spacing:0.03em;">
+      Tüm espresso bazlı içeceklerimiz tercih ettiğiniz blend ile hazırlanır. Blend seçiminizi baristan ile paylaşabilirsiniz.
+    </p>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-brand">KONTRBUS</span>
+    <span class="page-footer-tagline">Her çekirdeğin bir hikayesi var.</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 3 — SOĞUK İÇECEKLER
+════════════════════════════════════════ -->
+<div class="page inner-page">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <span class="page-num">03</span>
+
+  <div class="page-header">
+    <span class="section-eyebrow">Serinleten Serisi</span>
+    <h2 class="section-title">Soğuk İçecekler</h2>
+    <p class="section-title-italic">Buzlu keyifler, tropikal dokunuşlar</p>
+    <div class="header-rule">
+      <div class="gold-line-h" style="flex:1;"></div>
+      <div class="header-rule-dot"></div>
+      <div class="gold-line-h" style="flex:1;"></div>
+    </div>
+  </div>
+
+  <!-- 2-column grid -->
+  <div class="two-col">
+    <div class="col-items">
+
+      <div class="menu-item">
+        <span class="item-num">01</span>
+        <div class="item-body">
+          <span class="item-name">Cold Brew</span>
+          <span class="item-note">12 saat demleme · Soğuk · Yoğun</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+      <div class="menu-item">
+        <span class="item-num">02</span>
+        <div class="item-body">
+          <span class="item-name">Iced Caramel Latte</span>
+          <span class="item-note">Tatlı · Kremamsı · Serinletici</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+      <div class="menu-item">
+        <span class="item-num">03</span>
+        <div class="item-body">
+          <span class="item-name">Iced Matcha Latte</span>
+          <span class="item-note">Çiçeksi · Yeşil çay · Ferah</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+      <div class="menu-item">
+        <span class="item-num">04</span>
+        <div class="item-body">
+          <span class="item-name">Iced Americano</span>
+          <span class="item-note">Saf · Keskin · Minimal</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+      <div class="menu-item">
+        <span class="item-num">05</span>
+        <div class="item-body">
+          <span class="item-name">Iced Pistachio Latte</span>
+          <span class="item-note">Fıstıklı · Özel · Premium</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+    </div>
+
+    <div class="col-items">
+
+      <div class="menu-item">
+        <span class="item-num">06</span>
+        <div class="item-body">
+          <span class="item-name">Espresso Tonic</span>
+          <span class="item-note">Keskin · Köpüklü · Modern</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+      <div class="menu-item">
+        <span class="item-num">07</span>
+        <div class="item-body">
+          <span class="item-name">Limonata</span>
+          <span class="item-note">Taze · Doğal · Ferahlatıcı</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+      <div class="menu-item">
+        <span class="item-num">08</span>
+        <div class="item-body">
+          <span class="item-name">Mango Passion</span>
+          <span class="item-note">Tropikal · Meyveli · Canlı</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+      <div class="menu-item">
+        <span class="item-num">09</span>
+        <div class="item-body">
+          <span class="item-name">Strawberry Smoothie</span>
+          <span class="item-note">Meyveli · Kremamsı · Taze</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+      <div class="menu-item">
+        <span class="item-num">10</span>
+        <div class="item-body">
+          <span class="item-name">Portakal Suyu</span>
+          <span class="item-note">100% taze sıkım · Doğal · Saf</span>
+        </div>
+        <div class="item-dots"></div>
+        <span class="item-price">— ₺</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Seasonal note -->
+  <div style="margin-top:10mm;text-align:center;">
+    <div class="gold-line-h" style="margin-bottom:5mm;"></div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:9pt;color:rgba(245,239,230,0.35);letter-spacing:0.06em;line-height:1.7;">
+      Sezonluk özel içeceklerimiz için baristanıza danışınız.<br>
+      <span style="font-size:8pt;color:rgba(201,168,76,0.45);">Tüm içeceklerimiz süt alternatifleri ile hazırlanabilir · Badem · Yulaf · Soya</span>
+    </p>
+    <div class="gold-line-h" style="margin-top:5mm;"></div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-brand">KONTRBUS</span>
+    <span class="page-footer-tagline">Her çekirdeğin bir hikayesi var.</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 4 — TATLILAR + BİLGİ
+════════════════════════════════════════ -->
+<div class="page inner-page">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <span class="page-num">04</span>
+
+  <div class="page-header">
+    <span class="section-eyebrow">Mutfaktan</span>
+    <h2 class="section-title">Tatlılar & Atıştırmalıklar</h2>
+    <p class="section-title-italic">Kahvenizi tamamlayan lezzetler</p>
+    <div class="header-rule">
+      <div class="gold-line-h" style="flex:1;"></div>
+      <div class="header-rule-dot"></div>
+      <div class="gold-line-h" style="flex:1;"></div>
+    </div>
+  </div>
+
+  <div class="menu-items">
+
+    <div class="menu-item">
+      <span class="item-num">01</span>
+      <div class="item-body">
+        <span class="item-name">Çikolatalı Kruvasan</span>
+        <span class="item-note">Çıtır katmanlar · Eriyen çikolata</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">02</span>
+      <div class="item-body">
+        <span class="item-name">Fıstıklı Kruvasan</span>
+        <span class="item-note">Fıstık kreması · Çikolata sos</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">03</span>
+      <div class="item-body">
+        <span class="item-name">Orman Meyveli Cheesecake</span>
+        <span class="item-note">Kremamsı · Meyveli · Hafif</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">04</span>
+      <div class="item-body">
+        <span class="item-name">Karamel Cheesecake</span>
+        <span class="item-note">Yoğun · Karamel sos · Fındık</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">05</span>
+      <div class="item-body">
+        <span class="item-name">Kakao Topları</span>
+        <span class="item-note">Hindistan cevizi · Kakao · Doğal</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">06</span>
+      <div class="item-body">
+        <span class="item-name">Tiramisu</span>
+        <span class="item-note">Mascarpone · Espresso · Klasik İtalyan</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+    <div class="menu-item">
+      <span class="item-num">07</span>
+      <div class="item-body">
+        <span class="item-name">Brownie</span>
+        <span class="item-note">Yoğun çikolata · Çıtır üst · Islak iç</span>
+      </div>
+      <div class="item-dots"></div>
+      <span class="item-price">— ₺</span>
+    </div>
+
+  </div>
+
+  <!-- Contact / Info Block -->
+  <div class="info-block">
+    <div class="info-col">
+      <span class="info-label">Adres</span>
+      <span class="info-val">Kazımdirik, 364/3. Sk. No:20<br>Bornova / İzmir</span>
+    </div>
+    <div class="info-col">
+      <span class="info-label">Çalışma Saatleri</span>
+      <span class="info-val">Her Gün<br>08:30 — 01:00</span>
+    </div>
+    <div class="info-col">
+      <span class="info-label">Sosyal Medya</span>
+      <span class="info-val" style="color:var(--gold);">@kontrbuscoffee</span>
+    </div>
+    <div class="info-col">
+      <span class="info-label">Fiyat Bilgisi</span>
+      <span class="info-val">Fiyatlarımıza<br>rafımızdan ulaşabilirsiniz.</span>
+    </div>
+  </div>
+
+  <!-- Tagline bottom -->
+  <div style="margin-top:auto;padding-top:8mm;text-align:center;">
+    <div class="gold-line-h" style="margin-bottom:5mm;opacity:0.3;"></div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11pt;color:rgba(201,168,76,0.5);letter-spacing:0.12em;">
+      71'den Gelen Ruh
+    </p>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-brand">KONTRBUS</span>
+    <span class="page-footer-tagline">Her çekirdeğin bir hikayesi var.</span>
+  </div>
+</div>
+
+</body>
+</html>

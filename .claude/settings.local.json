@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l \"c:\\\\Users\\\\KAAN\\\\PROJELER\\\\kafe\\\\site_v2 \\(4\\).html\")",
+      "Bash(GEMINI_DIR=\"C:/Users/KAAN/.gemini/antigravity/brain/0709185c-dc4d-4f85-84f7-f7deebcfd707\")",
+      "Bash(cp \"$GEMINI_DIR/green_coffee_beans_1773503631543.png\" \"C:/Users/KAAN/PROJELER/kafe/assets/images/bouncecard/\")",
+      "Bash(cp \"$GEMINI_DIR/coffee_roasting_process_1773503065529.png\" \"C:/Users/KAAN/PROJELER/kafe/assets/images/bouncecard/\")",
+      "Bash(cp \"$GEMINI_DIR/hero_coffee_cup_1773502996733.png\" \"C:/Users/KAAN/PROJELER/kafe/assets/images/bouncecard/\")",
+      "Bash(cp \"$GEMINI_DIR/cold_brew_bottle_1773503459957.png\" \"C:/Users/KAAN/PROJELER/kafe/assets/images/bouncecard/\")",
+      "Bash(grep:*)",
+      "Bash(python3:*)",
+      "Bash(py --version)",
+      "Bash(python:*)",
+      "Bash(wc -l '/c/Users/KAAN/Downloads/site_v2.html' '/c/Users/KAAN/Downloads/site_v2 \\(1\\).html' '/c/Users/KAAN/Downloads/site_v2 \\(2\\).html' '/c/Users/KAAN/Downloads/site_v2 \\(3\\).html' '/c/Users/KAAN/Downloads/site_v2 \\(4\\).html')",
+      "Bash(find /c/Users/KAAN/AppData/Roaming/Antigravity/User/History -name *.html)",
+      "Bash(xargs wc:*)",
+      "Bash(node -e \":*)",
+      "Bash(node \"C:/Users/KAAN/PROJELER/kafe/rebuild_story.js\")",
+      "Bash(sed -n '254,265p' \"C:/Users/KAAN/PROJELER/kafe/site_v2_4.html\")",
+      "Bash(sed -n '435,442p' \"C:/Users/KAAN/PROJELER/kafe/site_v2_4.html\")",
+      "Bash(node c:/Users/KAAN/PROJELER/kafe/fix_story_img.js)",
+      "Bash(node c:/Users/KAAN/PROJELER/kafe/fix_story_mobile.js)",
+      "Bash(ls -la \"c:\\\\Users\\\\KAAN\\\\PROJELER\\\\kafe\\\\assets\"\" 2>/dev/null || echo \"assets folder not found \")",
+      "Bash(grep -o \"url\\(''''file:///\" /c/Users/KAAN/PROJELER/kafe/site_v2_4.html)",
+      "Bash(node c:/Users/KAAN/PROJELER/kafe/fix_hero_bg.js)",
+      "Bash(/dev/null ls:*)",
+      "Bash(node c:/Users/KAAN/PROJELER/kafe/finalize.js)",
+      "Bash(npx --yes serve --version)",
+      "Bash(where npx:*)"
+    ]
+  }
+}
