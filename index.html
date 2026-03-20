@@ -2660,9 +2660,7 @@
                 outroOvl.style.opacity = clamp(outroAlpha, 0, 1);
             }
 
-            if (!isMobile) {
-                window.addEventListener('scroll', onScroll, { passive: true });
-            }
+            window.addEventListener('scroll', onScroll, { passive: true });
         })();
 
         // Preloader Logic
