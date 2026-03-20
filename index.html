@@ -2859,7 +2859,7 @@ uniform float uTime;uniform float uSpread;uniform float uBaseSize;
 varying vec4 vRandom;varying vec3 vColor;
 void main(){
   vRandom=random;vColor=color;
-  vec3 pos=position*uSpread;pos.z*=10.0;
+  vec3 pos=position*uSpread;pos.z*=3.0;
   vec4 mPos=modelMatrix*vec4(pos,1.0);
   mPos.x+=sin(uTime*random.z+6.28*random.w)*mix(0.1,1.5,random.x);
   mPos.y+=sin(uTime*random.y+6.28*random.x)*mix(0.1,1.5,random.w);
@@ -2919,7 +2919,7 @@ void main(){
                 const r=section.getBoundingClientRect();
                 W=canvas.width=r.width;H=canvas.height=r.height;
                 gl.viewport(0,0,W,H);
-                const f=1/Math.tan(15*Math.PI/360),asp=W/H;
+                const f=1/Math.tan(45*Math.PI/360),asp=W/H;
                 id(proj);proj[0]=f/asp;proj[5]=f;proj[10]=-1.002;proj[11]=-1;proj[14]=-0.2002;proj[15]=0;
             }
             new IntersectionObserver(e=>{inView=e[0].isIntersecting;},{threshold:0}).observe(section);
@@ -2940,7 +2940,7 @@ void main(){
                 gl.uniformMatrix4fv(uView,false,view);
                 gl.uniformMatrix4fv(uProj,false,proj);
                 gl.uniform1f(uSpread,10);
-                gl.uniform1f(uBase,70);
+                gl.uniform1f(uBase,300);
                 gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.drawArrays(gl.POINTS,0,COUNT);
             }
