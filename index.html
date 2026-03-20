@@ -537,7 +537,11 @@
     <!-- BLENDS VIDEO SECTION -->
     <style>
         .blends-video-wrap { aspect-ratio: 16/9; }
-        @media (max-width: 767px) { .blends-video-wrap { aspect-ratio: 4/3; } }
+        @media (max-width: 767px) {
+            .blends-video-wrap { aspect-ratio: 4/3; }
+            #blends-animation { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+            #blends-animation .text-center { margin-bottom: 1rem !important; }
+        }
     </style>
     <section id="blends-animation" class="bg-sectionDark py-20">
         <div class="container mx-auto px-6">
