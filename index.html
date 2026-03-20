@@ -542,7 +542,7 @@
                 <h2 class="text-4xl md:text-6xl font-heading font-bold text-primaryAccent">KONTRBUS ATMOSFERİ</h2>
             </div>
             <div class="relative mx-auto rounded-2xl overflow-hidden shadow-2xl" style="max-width:1200px;aspect-ratio:16/9;">
-                <video autoplay muted loop playsinline class="w-full h-full object-cover" src="assets/kontrbus video.mov"></video>
+                <video autoplay muted loop playsinline class="w-full h-full object-cover" src="assets/kontrbus_video_opt.mp4"></video>
             </div>
         </div>
 
@@ -2121,25 +2121,25 @@
         // Blend Switcher Interaction
         const blendData = {
             'Moab Blend': {
-                img: 'assets/images/bouncecard/green_coffee_beans_1773503631543.png',
+                img: 'assets/images/bouncecard/green_coffee_beans_1773503631543.jpeg',
                 notes: 'Beyaz çikolata · Fındık · Karamel. Yumuşak içimli ve tatlı bitişli.',
                 roast: 'Orta-Koyu Kavrulmuş. Asidite düşük, gövde yüksek.',
                 origin: 'Latin Amerika (Brezilya & Kolombiya karışımı).'
             },
             'House Blend': {
-                img: 'assets/images/bouncecard/coffee_roasting_process_1773503065529.png',
+                img: 'assets/images/bouncecard/coffee_roasting_process_1773503065529.jpeg',
                 notes: 'Bitter çikolata · Kırmızı meyveler. Dengeli ve yoğun.',
                 roast: 'Orta Kavrulmuş. Kompleks asidite.',
                 origin: 'Orta Amerika & Afrika Harmanı.'
             },
             'Colombia Single Origin': {
-                img: 'assets/images/bouncecard/hero_coffee_cup_1773502996733.png',
+                img: 'assets/images/bouncecard/hero_coffee_cup_1773502996733.jpeg',
                 notes: 'Narenciye · Esmer şeker. Canlı ve parlak içim.',
                 roast: 'Hafif-Orta Kavrulmuş. Yüksek asidite.',
                 origin: 'Huila, Kolombiya.'
             },
             'Jersey Blend': {
-                img: 'assets/images/bouncecard/cold_brew_bottle_1773503459957.png',
+                img: 'assets/images/bouncecard/cold_brew_bottle_1773503459957.jpeg',
                 notes: 'Baharatlı · Odunsu · Kakao. Güçlü karakterli.',
                 roast: 'Koyu Kavrulmuş. Düşük asidite, tam gövde.',
                 origin: 'Endonezya & Brezilya.'
@@ -2274,8 +2274,8 @@
 
         // --- Masonry Gallery Implementation ---
         const masonryItems = [
-            { id: "1", img: "assets/konsept/Whisk_8d383439c55f7eb96b149c4910ea516ddr.png", height: 800 },
-            { id: "2", img: "assets/konsept/Whisk_9fdb27a58f6bde997c141bb46251615ddr.png", height: 500 },
+            { id: "1", img: "assets/konsept/Whisk_8d383439c55f7eb96b149c4910ea516ddr.jpeg", height: 800 },
+            { id: "2", img: "assets/konsept/Whisk_9fdb27a58f6bde997c141bb46251615ddr.jpeg", height: 500 },
             { id: "3", img: "assets/konsept/hf_20260314_175146_091abbe7-937c-4588-9fe4-e5a038eff9ec.jpeg", height: 900 },
             { id: "4", img: "assets/konsept/hf_20260314_184141_d9da40ad-dfdb-48ad-81c8-8e6d8b531a65.jpeg", height: 400 },
             { id: "5", img: "assets/konsept/hf_20260314_184536_39363a02-f269-4d2d-a70f-337973c46b56.jpeg", height: 750 },
@@ -2672,7 +2672,7 @@
                 return new Promise(resolve => {
                     const img = new Image();
                     const num = padNum(i + 1);
-                    img.src = FOLDER + 'ezgif-frame-' + num + '.png';
+                    img.src = FOLDER + 'ezgif-frame-' + num + '.jpg';
                     img.onload = img.onerror = () => {
                         frames[i] = img;
                         onFrameLoad();
@@ -2775,7 +2775,7 @@
 
             const frameCount = 121;
             const currentFrame = index =>
-                'assets/frames/hero/ezgif-frame-' + String(index + 1).padStart(3, '0') + '.png';
+                'assets/frames/hero/ezgif-frame-' + String(index + 1).padStart(3, '0') + '.jpg';
 
             const images = [];
             const canvasObj = { frame: 0 };
