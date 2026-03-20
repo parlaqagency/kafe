@@ -2537,19 +2537,19 @@
 
             function sizeCanvas() {
                 if (isMobile) {
-                    // Portrait canvas on mobile to match coffee bag frames
+                    // Mobile: 4:3 boxed, 24px side padding
                     const padding = 24;
                     const maxW = window.innerWidth - padding * 2;
                     const w = Math.round(maxW);
-                    const h = Math.round(w * 3 / 4); // 4:3 landscape ratio matching frames
+                    const h = Math.round(w * 3 / 4);
                     canvas.width        = w * dpr;
                     canvas.height       = h * dpr;
                     canvas.style.width  = w + 'px';
                     canvas.style.height = h + 'px';
                 } else {
-                    // Landscape 16:9 on desktop
+                    // Desktop: 16:9 boxed, max 1100px wide (like video section)
                     const padding = 80;
-                    const maxW = Math.min(window.innerWidth - padding * 2, window.innerHeight * 16 / 9);
+                    const maxW = Math.min(window.innerWidth - padding * 2, 1100);
                     const w = Math.round(maxW);
                     const h = Math.round(w * 9 / 16);
                     canvas.width        = w * dpr;
