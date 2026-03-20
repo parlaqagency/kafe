@@ -534,44 +534,20 @@
         </div>
     </section>
 
-    <!-- BLENDS FRAME ANIMATION SECTION -->
-    <section id="blends-animation" style="height:500vh; background:#06080A; position:relative;">
-
-        <!-- Loader -->
-        <div id="blends-loader" style="position:sticky;top:0;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#06080A;z-index:20;">
-            <div id="blends-spinner" style="width:48px;height:48px;border:3px solid rgba(201,168,76,0.15);border-top-color:#c9a84c;border-radius:50%;animation:blends-spin 0.8s linear infinite;"></div>
-            <p style="color:#c9a84c;font-family:'Bebas Neue',sans-serif;letter-spacing:0.15em;margin-top:16px;font-size:1rem;">YÜKLENİYOR... <span id="blends-pct">0%</span></p>
-            <div style="width:160px;height:2px;background:rgba(201,168,76,0.1);margin-top:12px;border-radius:1px;overflow:hidden;">
-                <div id="blends-progress-bar" style="height:100%;width:0%;background:#c9a84c;transition:width 0.1s linear;"></div>
+    <!-- BLENDS VIDEO SECTION -->
+    <style>
+        .blends-video-wrap { aspect-ratio: 16/9; }
+        @media (max-width: 767px) { .blends-video-wrap { aspect-ratio: 4/3; } }
+    </style>
+    <section id="blends-animation" class="bg-sectionDark py-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-10">
+                <span style="color:#c9a84c;font-family:system-ui,sans-serif;font-size:0.65rem;letter-spacing:0.35em;text-transform:uppercase;display:block;margin-bottom:12px;">İMZA BLENDLER</span>
+                <h2 style="color:#fff;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:0.06em;margin:0 0 8px;">HER ÇEKİRDEĞİN HİKAYESİ</h2>
+                <p style="color:rgba(201,168,76,0.7);font-family:'Oswald',sans-serif;font-size:0.8rem;letter-spacing:0.2em;">MOAB · HOUSE BLEND · COLOMBIA · JERSEY BLEND</p>
             </div>
-        </div>
-
-        <!-- Sticky canvas wrapper -->
-        <div id="blends-sticky" style="position:sticky;top:0;height:100vh;width:100%;display:none;flex-direction:column;align-items:center;justify-content:center;background:#06080A;">
-            <canvas id="blends-canvas" style="display:block;margin:auto;border-radius:18px;box-shadow:0 0 80px rgba(201,168,76,0.12);background:#06080A;"></canvas>
-
-            <!-- Overlay: intro (0-15%) -->
-            <div id="blends-intro-overlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:clamp(2vh,8vh,12vh);padding-top:72px;padding-left:16px;padding-right:16px;pointer-events:none;opacity:0;overflow:hidden;">
-                <span style="color:#c9a84c;font-family:system-ui,sans-serif;font-size:clamp(0.55rem,2vw,0.7rem);letter-spacing:clamp(0.1em,0.25em,0.35em);text-transform:uppercase;margin-bottom:8px;white-space:nowrap;">İMZA BLENDLER</span>
-                <h2 style="color:#ffffff;font-family:'Bebas Neue',sans-serif;font-size:clamp(1.1rem,4vw,2rem);letter-spacing:0.06em;text-align:center;line-height:1.15;margin:0;">HER ÇEKİRDEĞİN HİKAYESİ</h2>
-                <p id="blends-scroll-hint" style="color:#c9a84c;font-family:system-ui,sans-serif;font-size:0.65rem;letter-spacing:0.2em;margin-top:16px;animation:blends-bounce 1.5s ease-in-out infinite;">KAYDIR ↓</p>
-            </div>
-
-            <!-- Overlay: outro (80-100%) -->
-            <div id="blends-outro-overlay" style="position:absolute;bottom:clamp(2vh,6vh,6vh);left:0;right:0;display:flex;flex-direction:column;align-items:center;pointer-events:none;opacity:0;padding:0 16px;">
-                <span style="color:#c9a84c;font-family:system-ui,sans-serif;font-size:clamp(0.55rem,1.5vw,0.65rem);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:12px;">4 ÖZEL BLEND</span>
-                <p style="color:rgba(255,255,255,0.85);font-family:'Bebas Neue',sans-serif;font-size:clamp(0.75rem,2.5vw,1.75rem);letter-spacing:0.1em;text-align:center;">MOAB BLEND <span style="color:#c9a84c;">·</span> HOUSE BLEND <span style="color:#c9a84c;">·</span> COLOMBIA <span style="color:#c9a84c;">·</span> JERSEY BLEND</p>
-            </div>
-        </div>
-
-        <!-- Mobile fallback -->
-        <div id="blends-mobile" style="display:none;height:100vh;position:sticky;top:0;background-image:url('assets/images/bouncecard/green_coffee_beans_1773503631543.jpeg');background-size:cover;background-position:center;">
-            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,8,10,0.55) 0%,rgba(6,8,10,0.75) 100%);"></div>
-            <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px;text-align:center;">
-                <span style="color:#c9a84c;font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.35em;text-transform:uppercase;margin-bottom:16px;">İMZA BLENDLER</span>
-                <h2 style="color:#fff;font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,10vw,3.5rem);line-height:1.1;margin:0 0 20px;">HER ÇEKİRDEĞİN<br>HİKAYESİ</h2>
-                <div style="width:40px;height:1px;background:#c9a84c;margin:0 auto 20px;"></div>
-                <p style="color:rgba(255,255,255,0.75);font-family:'Oswald',sans-serif;font-size:0.85rem;letter-spacing:0.15em;">MOAB · HOUSE · COLOMBIA · JERSEY</p>
+            <div class="blends-video-wrap relative mx-auto rounded-2xl overflow-hidden" style="max-width:1100px;box-shadow:0 0 80px rgba(201,168,76,0.15);">
+                <video autoplay muted loop playsinline class="w-full h-full object-cover" src="assets/video/blends.mp4" style="display:block;width:100%;height:100%;object-fit:cover;"></video>
             </div>
         </div>
     </section>
@@ -2504,183 +2480,6 @@
 
         // Hero particles removed
 
-
-        // ─── BLEND FRAME SEQUENCE ────────────────────────────────────────────
-        (function () {
-            const TOTAL = 121;
-            const isMobile = window.innerWidth < 768;
-            const FOLDER = isMobile ? 'assets/frames/blends-mobile/' : 'assets/frames/blends/';
-
-            const section     = document.getElementById('blends-animation');
-            const loader      = document.getElementById('blends-loader');
-            const sticky      = document.getElementById('blends-sticky');
-            const mobileEl    = document.getElementById('blends-mobile');
-            const canvas      = document.getElementById('blends-canvas');
-            const pctEl       = document.getElementById('blends-pct');
-            const pBar        = document.getElementById('blends-progress-bar');
-            const introOvl    = document.getElementById('blends-intro-overlay');
-            const outroOvl    = document.getElementById('blends-outro-overlay');
-
-            if (!section) return;
-
-            // Hide static fallback — canvas runs on all screens
-            mobileEl.style.display = 'none';
-
-            // Boxed 16:9 canvas centered — all screen sizes
-            sticky.style.display        = 'flex';
-            sticky.style.flexDirection  = 'column';
-            sticky.style.alignItems     = 'center';
-            sticky.style.justifyContent = 'center';
-
-            const dpr = window.devicePixelRatio || 1;
-            const ctx = canvas.getContext('2d');
-
-            function sizeCanvas() {
-                if (isMobile) {
-                    // Mobile: 4:3 boxed, 24px side padding
-                    const padding = 24;
-                    const maxW = window.innerWidth - padding * 2;
-                    const w = Math.round(maxW);
-                    const h = Math.round(w * 3 / 4);
-                    canvas.width        = w * dpr;
-                    canvas.height       = h * dpr;
-                    canvas.style.width  = w + 'px';
-                    canvas.style.height = h + 'px';
-                } else {
-                    // Desktop: 16:9 boxed, max 1100px wide (like video section)
-                    const padding = 80;
-                    const maxW = Math.min(window.innerWidth - padding * 2, 1100);
-                    const w = Math.round(maxW);
-                    const h = Math.round(w * 9 / 16);
-                    canvas.width        = w * dpr;
-                    canvas.height       = h * dpr;
-                    canvas.style.width  = w + 'px';
-                    canvas.style.height = h + 'px';
-                }
-                ctx.scale(dpr, dpr);
-            }
-            sizeCanvas();
-
-            let resizeTimer;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => {
-                    ctx.resetTransform();
-                    sizeCanvas();
-                    if (frames[currentFrame]) drawFrame(currentFrame);
-                }, 150);
-            });
-
-            // Pre-load all frames
-            const frames = new Array(TOTAL);
-            let loaded   = 0;
-            let currentFrame = 0;
-
-            function padNum(n) { return String(n).padStart(3, '0'); }
-
-            function drawFrame(idx) {
-                const img = frames[idx];
-                if (!img) return;
-                const cw = canvas.width  / dpr;
-                const ch = canvas.height / dpr;
-                const iw = img.naturalWidth;
-                const ih = img.naturalHeight;
-                const scale = Math.max(cw / iw, ch / ih);
-                const sw = iw * scale;
-                const sh = ih * scale;
-                ctx.clearRect(0, 0, cw, ch);
-                ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
-            }
-
-            function onFrameLoad() {
-                loaded++;
-                const pct = Math.round((loaded / TOTAL) * 100);
-                pctEl.textContent = pct + '%';
-                pBar.style.width  = pct + '%';
-
-                if (loaded === TOTAL) {
-                    // Fade out loader, show canvas
-                    gsap.to(loader, { opacity: 0, duration: 0.6, onComplete: () => {
-                        loader.style.display = 'none';
-                        sticky.style.display = 'block';
-                        drawFrame(0);
-                        gsap.to(introOvl, { opacity: 1, duration: 0.8 });
-
-                    }});
-                }
-            }
-
-            // Preload with Promise.all (parallel)
-            const promises = Array.from({ length: TOTAL }, (_, i) => {
-                return new Promise(resolve => {
-                    const img = new Image();
-                    const num = padNum(i + 1);
-                    img.src = FOLDER + 'ezgif-frame-' + num + '.jpg';
-                    img.onload = img.onerror = () => {
-                        frames[i] = img;
-                        onFrameLoad();
-                        resolve();
-                    };
-                });
-            });
-
-            // Scroll handler
-            function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
-            function map(v, a, b, c, d) { return c + ((v - a) / (b - a)) * (d - c); }
-
-            function onScroll() {
-                if (loaded < TOTAL) return;
-
-                const rect  = section.getBoundingClientRect();
-                const total = section.offsetHeight - window.innerHeight;
-                const scrolled = -rect.top;
-                const progress = clamp(scrolled / total, 0, 1);
-
-                // Frame index
-                const idx = clamp(Math.floor(progress * TOTAL), 0, TOTAL - 1);
-                if (idx !== currentFrame) {
-                    currentFrame = idx;
-                    drawFrame(idx);
-                }
-
-                // Intro overlay: 0–15%
-                const introAlpha = progress < 0.08
-                    ? map(progress, 0, 0.08, 0, 1)
-                    : progress < 0.15
-                        ? 1
-                        : map(progress, 0.15, 0.22, 1, 0);
-                introOvl.style.opacity = clamp(introAlpha, 0, 1);
-
-                // Outro overlay: 80–100%
-                const outroAlpha = progress > 0.92
-                    ? map(progress, 0.92, 1, 0, 1)
-                    : progress > 0.80
-                        ? map(progress, 0.80, 0.92, 0, 1)
-                        : 0;
-                outroOvl.style.opacity = clamp(outroAlpha, 0, 1);
-            }
-
-            // Use both lenis scroll event and RAF-based polling for mobile reliability
-            if (typeof lenis !== 'undefined') {
-                lenis.on('scroll', onScroll);
-            }
-            window.addEventListener('scroll', onScroll, { passive: true });
-            // RAF polling as fallback for mobile touch scroll
-            (function rafPoll() {
-                onScroll();
-                requestAnimationFrame(rafPoll);
-            })();
-        })();
-
-        // Preloader Logic
-        window.addEventListener('load', () => {
-            const tl = gsap.timeline();
-            
-            tl.to('#loader-bar', { width: '100%', duration: 1, ease: 'power2.inOut' })
-              .to('#loader-logo', { opacity: 1, y: -20, duration: 0.5, ease: 'power2.out' }, '-=0.5')
-              .to('#preloader', { yPercent: -100, duration: 1, ease: 'power4.inOut', onComplete: () => gsap.set('#preloader', { display: 'none' }) })
-              .from('.gs_reveal', { y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' }, '-=0.8');
-        });
 
         // Split Type Initialization
         const splitTextEls = document.querySelectorAll('.split-text');
