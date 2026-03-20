@@ -3108,164 +3108,52 @@ void main(){vec4 fc;mainImage(fc,gl_FragCoord.xy);gl_FragColor=fc;}`;
             resize(); requestAnimationFrame(loop);
         })();
 
-        // ── GHOST CURSOR — STORY SECTION ───────────────────────────────────
+        // ── GHOST CURSOR — STORY SECTION (lightweight Canvas 2D) ───────────
         (function () {
             const section = document.getElementById('story');
             const canvas  = document.getElementById('ghost-cursor-canvas');
             if (!section || !canvas) return;
-
-            const TRAIL  = 12;   // reduced from 40
-            const COLOR  = [240/255, 167/255, 10/255]; // #f0a70a
-            const BRIGHT = 2.0;
-            const GRAIN  = 0.05;
-            const INERTIA     = 0.5;
-            const FADE_DELAY  = 1000;
-            const FADE_DUR    = 1500;
-
-            const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
-            if (!gl) return;
-
-            gl.enable(gl.BLEND);
-            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-            const VS = `attribute vec2 a_pos;void main(){gl_Position=vec4(a_pos,0.,1.);}`;
-
-            const FS = `
-precision mediump float;
-#define TL ${TRAIL}
-uniform float iTime;
-uniform vec3  iRes;
-uniform vec2  iMouse;
-uniform vec2  iPrev[TL];
-uniform float iOpa;
-uniform float iSca;
-uniform vec3  iCol;
-uniform float iBri;
-uniform float iGra;
-
-float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-float n(vec2 p){vec2 i=floor(p),f=fract(p);f*=f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
-float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(.877,.479,-.479,.877);for(int i=0;i<3;i++){v+=a*n(p);p=m*p*2.;a*=.5;}return v;}
-
-vec4 blob(vec2 p,vec2 mp,float strength,float opa){
-  vec2 q=vec2(fbm(p*iSca+iTime*.1),fbm(p*iSca+vec2(5.2,1.3)+iTime*.1));
-  float smoke=fbm(p*iSca+q*.8);
-  float rad=.5+.3*(1./iSca);
-  float df=1.-smoothstep(0.,rad*opa,length(p-mp));
-  float alpha=pow(smoke,2.5)*df;
-  vec3 c=mix(iCol,mix(iCol,vec3(1.),.15),sin(iTime*.5)*.5+.5);
-  return vec4(c*alpha*strength,alpha*strength);
-}
-
-void main(){
-  vec2 uv=(gl_FragCoord.xy/iRes.xy*2.-1.)*vec2(iRes.x/iRes.y,1.);
-  vec2 ms=(iMouse*2.-1.)*vec2(iRes.x/iRes.y,1.);
-  vec3 col=vec3(0.);float alp=0.;
-  vec4 b=blob(uv,ms,1.,iOpa);col+=b.rgb;alp+=b.a;
-  for(int i=0;i<TL;i++){
-    vec2 pm=(iPrev[i]*2.-1.)*vec2(iRes.x/iRes.y,1.);
-    float t=pow(1.-float(i)/float(TL),2.);
-    if(t>.05){vec4 bt=blob(uv,pm,t*.8,iOpa);col+=bt.rgb;alp+=bt.a;}
-  }
-  col*=iBri;
-  float oa=clamp(alp*iOpa,0.,1.);
-  gl_FragColor=vec4(col*oa,oa);
-}`;
-
-            function mkShader(type, src) {
-                const s = gl.createShader(type);
-                gl.shaderSource(s, src); gl.compileShader(s);
-                return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : (console.error(gl.getShaderInfoLog(s)), null);
-            }
-            const vs = mkShader(gl.VERTEX_SHADER, VS);
-            const fs = mkShader(gl.FRAGMENT_SHADER, FS);
-            if (!vs || !fs) return;
-            const prog = gl.createProgram();
-            gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
-            if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
-            gl.useProgram(prog);
-
-            const buf = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
-            const aPos = gl.getAttribLocation(prog, 'a_pos');
-            gl.enableVertexAttribArray(aPos);
-            gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-            const U = n => gl.getUniformLocation(prog, n);
-            const uTime=U('iTime'),uRes=U('iRes'),uMouse=U('iMouse'),uPrev=U('iPrev'),
-                  uOpa=U('iOpa'),uSca=U('iSca'),uCol=U('iCol'),uBri=U('iBri'),uGra=U('iGra');
-
-            gl.uniform3f(uCol, COLOR[0], COLOR[1], COLOR[2]);
-            gl.uniform1f(uBri, BRIGHT);
-            gl.uniform1f(uGra, GRAIN);
-
-            const trail = new Float32Array(TRAIL * 2).fill(0.5);
-            let head = 0;
-            const mouse = {x:.5,y:.5}, vMouse = {x:.5,y:.5}, vel = {x:0,y:0};
-            let lastMove = 0, opacity = 0, running = false, active = false;
-
-            const DPR = 0.4; // fixed low resolution — CSS stretches it, looks fine for smoke
-            let inView = false;
+            const ctx = canvas.getContext('2d');
+            let W, H, mx = -999, my = -999, opacity = 0, active = false, running = false;
+            let lastMove = 0;
 
             function resize() {
                 const r = section.getBoundingClientRect();
-                canvas.width  = r.width  * DPR;
-                canvas.height = r.height * DPR;
-                gl.viewport(0,0,canvas.width,canvas.height);
-                gl.uniform3f(uRes, canvas.width, canvas.height, 1);
-                const base=600, cur=Math.min(Math.max(1,r.width),Math.max(1,r.height));
-                gl.uniform1f(uSca, Math.max(.5,Math.min(2,cur/base)));
+                W = canvas.width  = r.width;
+                H = canvas.height = r.height;
             }
 
-            // Pause when section is off screen
-            new IntersectionObserver(e => { inView = e[0].isIntersecting; }, {threshold:0}).observe(section);
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                if (opacity <= 0) return;
+                const r1 = Math.min(W, H) * 0.18;
+                const r2 = r1 * 3.5;
+                const g = ctx.createRadialGradient(mx, my, r1 * 0.1, mx, my, r2);
+                g.addColorStop(0,   `rgba(240,167,10,${0.28 * opacity})`);
+                g.addColorStop(0.4, `rgba(200,130,10,${0.10 * opacity})`);
+                g.addColorStop(1,   'rgba(0,0,0,0)');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, W, H);
+            }
 
-            const t0 = performance.now();
-            const FPS_INTERVAL = 1000 / 30; // 30fps cap
-            let lastFrame = 0;
-
-            function loop(ts) {
-                requestAnimationFrame(loop);
-                if (!inView) return;
-                if (ts - lastFrame < FPS_INTERVAL) return;
-                lastFrame = ts;
-
-                const now = performance.now(), t = (now - t0) / 1000;
-                if (active) {
-                    vel.x = mouse.x - vMouse.x; vel.y = mouse.y - vMouse.y;
-                    vMouse.x = mouse.x; vMouse.y = mouse.y;
-                    opacity = 1;
-                } else {
-                    vel.x *= INERTIA; vel.y *= INERTIA;
-                    vMouse.x += vel.x; vMouse.y += vel.y;
+            function loop() {
+                const now = performance.now();
+                if (!active) {
                     const dt = now - lastMove;
-                    if (dt > FADE_DELAY) opacity = Math.max(0, 1-(dt-FADE_DELAY)/FADE_DUR);
+                    if (dt > 800) opacity = Math.max(0, opacity - 0.04);
                 }
-                if (!active && opacity <= 0.001) return; // idle — skip render
-
-                head = (head+1) % TRAIL;
-                trail[head*2] = vMouse.x; trail[head*2+1] = vMouse.y;
-                const ord = new Float32Array(TRAIL*2);
-                for (let i=0;i<TRAIL;i++){const s=(head-i+TRAIL)%TRAIL;ord[i*2]=trail[s*2];ord[i*2+1]=trail[s*2+1];}
-
-                gl.uniform1f(uTime, t);
-                gl.uniform2f(uMouse, vMouse.x, vMouse.y);
-                gl.uniform2fv(uPrev, ord);
-                gl.uniform1f(uOpa, opacity);
-                gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                draw();
+                if (opacity > 0.01 || active) requestAnimationFrame(loop);
+                else running = false;
             }
-            function start() { if (!running){running=true;requestAnimationFrame(loop);} }
+            function start() { if (!running) { running = true; requestAnimationFrame(loop); } }
 
             section.addEventListener('pointermove', e => {
                 const r = section.getBoundingClientRect();
-                mouse.x = (e.clientX-r.left)/r.width;
-                mouse.y = 1-(e.clientY-r.top)/r.height;
-                active=true; lastMove=performance.now(); start();
-            }, {passive:true});
-            section.addEventListener('pointerenter', ()=>{active=true;start();},{passive:true});
-            section.addEventListener('pointerleave', ()=>{active=false;lastMove=performance.now();start();},{passive:true});
+                mx = e.clientX - r.left; my = e.clientY - r.top;
+                opacity = 1; active = true; lastMove = performance.now(); start();
+            }, {passive: true});
+            section.addEventListener('pointerleave', () => { active = false; lastMove = performance.now(); start(); }, {passive: true});
 
             new ResizeObserver(resize).observe(section);
             resize();
