@@ -294,86 +294,30 @@
         }
 
 
-        /* ── BorderGlow for masonry cards ── */
-        .masonry-item-wrapper {
-            --edge-proximity: 0;
-            --cursor-angle: 45deg;
-            --edge-sensitivity: 28;
-            --color-sensitivity: calc(var(--edge-sensitivity) + 20);
-            --cone-spread: 25;
-            --glow-padding: 14px;
-            --glow-color:    hsl(40deg 60% 60% / 45%);
-            --glow-color-60: hsl(40deg 60% 60% / 28%);
-            --glow-color-50: hsl(40deg 60% 60% / 22%);
-            --glow-color-40: hsl(40deg 60% 60% / 16%);
-            --glow-color-30: hsl(40deg 60% 60% / 11%);
-            --glow-color-20: hsl(40deg 60% 60% / 7%);
-            --glow-color-10: hsl(40deg 60% 60% / 4%);
-            isolation: isolate;
-            transform: translate3d(0,0,0.01px);
-        }
-        .masonry-item-wrapper::before {
-            content: '';
+        /* ── Border Trace for masonry cards ── */
+        .masonry-item-wrapper { isolation: isolate; }
+        .masonry-item-wrapper .trace-svg {
             position: absolute;
             inset: 0;
-            border-radius: 12px;
-            border: 1.5px solid transparent;
-            background:
-                linear-gradient(transparent 0 100%) padding-box,
-                radial-gradient(at 80% 55%, #C9A84C 0px, transparent 50%) border-box,
-                radial-gradient(at 20% 20%, #F4C56A 0px, transparent 50%) border-box,
-                radial-gradient(at 50% 90%, #D4891A 0px, transparent 50%) border-box,
-                linear-gradient(#C9A84C 0 100%) border-box;
-            opacity: 0;
-            transition: opacity 0.75s ease-in-out;
-            z-index: 2;
-            pointer-events: none;
-            mask-image: conic-gradient(
-                from var(--cursor-angle) at center,
-                black calc(var(--cone-spread) * 1%),
-                transparent calc((var(--cone-spread) + 15) * 1%),
-                transparent calc((100 - var(--cone-spread) - 15) * 1%),
-                black calc((100 - var(--cone-spread)) * 1%)
-            );
-        }
-        .masonry-item-wrapper:hover::before {
-            opacity: calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
-            transition: opacity 0.15s ease-out;
-        }
-        @media (hover: hover) {
-        .masonry-item-wrapper > .edge-light {
-            position: absolute;
-            inset: calc(var(--glow-padding) * -1);
-            border-radius: 14px;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: 3;
-            opacity: 0;
-            transition: opacity 0.75s ease-in-out;
-            mix-blend-mode: plus-lighter;
-            mask-image: conic-gradient(
-                from var(--cursor-angle) at center,
-                black 2.5%, transparent 10%, transparent 90%, black 97.5%
-            );
+            overflow: visible;
         }
-        .masonry-item-wrapper > .edge-light::before {
-            content: '';
-            position: absolute;
-            inset: var(--glow-padding);
-            border-radius: 12px;
-            box-shadow:
-                inset 0 0 0 1px var(--glow-color),
-                inset 0 0 3px 0 var(--glow-color-50),
-                inset 0 0 10px 0 var(--glow-color-40),
-                inset 0 0 22px 0 var(--glow-color-30),
-                inset 0 0 40px 2px var(--glow-color-20),
-                0 0 3px 0 var(--glow-color-50),
-                0 0 10px 0 var(--glow-color-40),
-                0 0 22px 0 var(--glow-color-30),
-                0 0 40px 2px var(--glow-color-20);
+        .masonry-item-wrapper .trace-rect {
+            fill: none;
+            stroke: #C9A84C;
+            stroke-width: 2;
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            rx: 12;
+            transition: stroke-dashoffset 0s linear;
         }
-        .masonry-item-wrapper:hover > .edge-light {
-            opacity: calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
-            transition: opacity 0.15s ease-out;
+        @media (hover: hover) {
+        .masonry-item-wrapper:hover .trace-rect {
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.9s cubic-bezier(0.4, 0, 0.2, 1);
         }
         } /* end @media hover */
 
@@ -2293,7 +2237,7 @@
             // Generate HTML
             masonryContainer.innerHTML = masonryItems.map(item => `
                 <div class="masonry-item-wrapper" data-id="${item.id}">
-                    <span class="edge-light"></span>
+                    <svg class="trace-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect class="trace-rect" x="1" y="1" width="98" height="98" rx="10"/></svg>
                     <div class="masonry-item-img" style="background-image: url(${item.img}); filter: blur(10px);"></div>
                 </div>
             `).join('');
@@ -2356,29 +2300,33 @@
                         }
                     );
 
-                    // Hover Effects
-                    el.addEventListener('mouseenter', () => {
-                        gsap.to(el, { scale: 0.96, duration: 0.3, ease: "power2.out" });
-                    });
-                    el.addEventListener('mouseleave', () => {
-                        gsap.to(el, { scale: 1, duration: 0.3, ease: "power2.out" });
-                    });
+                    // Set SVG trace rect perimeter dynamically
+                    const svgEl = el.querySelector('.trace-svg');
+                    const rectEl = el.querySelector('.trace-rect');
+                    if (rectEl) {
+                        const w = parseFloat(columnWidth), hh = parseFloat(h);
+                        const perimeter = Math.round(2 * (w + hh));
+                        rectEl.style.strokeDasharray = perimeter;
+                        rectEl.style.strokeDashoffset = perimeter;
+                        svgEl.setAttribute('viewBox', `0 0 ${w} ${hh}`);
+                        rectEl.setAttribute('width', w - 2);
+                        rectEl.setAttribute('height', hh - 2);
+                        rectEl.setAttribute('rx', 12);
+                        el.addEventListener('mouseenter', () => {
+                            rectEl.style.transition = `stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1)`;
+                            rectEl.style.strokeDashoffset = '0';
+                            gsap.to(el, { scale: 0.97, duration: 0.3, ease: "power2.out" });
+                        });
+                        el.addEventListener('mouseleave', () => {
+                            rectEl.style.transition = `stroke-dashoffset 0.5s ease-in`;
+                            rectEl.style.strokeDashoffset = perimeter;
+                            gsap.to(el, { scale: 1, duration: 0.3, ease: "power2.out" });
+                        });
+                    } else {
+                        el.addEventListener('mouseenter', () => gsap.to(el, { scale: 0.97, duration: 0.3, ease: "power2.out" }));
+                        el.addEventListener('mouseleave', () => gsap.to(el, { scale: 1, duration: 0.3, ease: "power2.out" }));
+                    }
 
-                    // BorderGlow tracking
-                    el.addEventListener('pointermove', (e) => {
-                        const rect = el.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        const cx = rect.width / 2, cy = rect.height / 2;
-                        const dx = x - cx, dy = y - cy;
-                        const kx = dx !== 0 ? cx / Math.abs(dx) : Infinity;
-                        const ky = dy !== 0 ? cy / Math.abs(dy) : Infinity;
-                        const edge = Math.min(Math.max(1 / Math.min(kx, ky), 0), 1) * 100;
-                        let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-                        if (angle < 0) angle += 360;
-                        el.style.setProperty('--edge-proximity', edge.toFixed(2));
-                        el.style.setProperty('--cursor-angle', angle.toFixed(2) + 'deg');
-                    });
                 } else {
                     gsap.to(el, { x: x, y: y, width: columnWidth, height: h, duration: 0.6, ease: "power3.out" });
                 }
