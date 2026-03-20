@@ -2660,7 +2660,16 @@
                 outroOvl.style.opacity = clamp(outroAlpha, 0, 1);
             }
 
+            // Use both lenis scroll event and RAF-based polling for mobile reliability
+            if (typeof lenis !== 'undefined') {
+                lenis.on('scroll', onScroll);
+            }
             window.addEventListener('scroll', onScroll, { passive: true });
+            // RAF polling as fallback for mobile touch scroll
+            (function rafPoll() {
+                onScroll();
+                requestAnimationFrame(rafPoll);
+            })();
         })();
 
         // Preloader Logic
