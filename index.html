@@ -2508,8 +2508,8 @@
         // ─── BLEND FRAME SEQUENCE ────────────────────────────────────────────
         (function () {
             const TOTAL = 121;
-            const FOLDER = 'assets/frames/blends/';
             const isMobile = window.innerWidth < 768;
+            const FOLDER = isMobile ? 'assets/frames/blends-mobile/' : 'assets/frames/blends/';
 
             const section     = document.getElementById('blends-animation');
             const loader      = document.getElementById('blends-loader');
@@ -2541,7 +2541,7 @@
                     const padding = 24;
                     const maxW = window.innerWidth - padding * 2;
                     const w = Math.round(maxW);
-                    const h = Math.round(w * 4 / 3); // 3:4 portrait ratio
+                    const h = Math.round(w * 3 / 4); // 4:3 landscape ratio matching frames
                     canvas.width        = w * dpr;
                     canvas.height       = h * dpr;
                     canvas.style.width  = w + 'px';
