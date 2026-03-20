@@ -2948,6 +2948,102 @@ void main(){
             resize();requestAnimationFrame(loop);
         })();
 
+        // Blends Antigravity
+        (function(){
+            const section = document.getElementById('blends-animation');
+            if (!section) return;
+            if (window.getComputedStyle(section).position === 'static') section.style.position = 'relative';
+            const canvas = document.createElement('canvas');
+            canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.85;';
+            section.insertBefore(canvas, section.firstChild);
+            const ctx = canvas.getContext('2d');
+
+            const COUNT = 150, LERP = 0.05, WAVE_SPEED = 0.4, PULSE_SPEED = 3, FIELD = 10, PSIZE = 1.5, FPS_MS = 1000/30;
+            let W=0,H=0,MAGNET_R=200,RING_R=130;
+
+            const particles = Array.from({length:COUNT}, ()=>({
+                t: Math.random()*100,
+                speed: 0.01+Math.random()/200,
+                mx:0, my:0, cx:0, cy:0,
+                rOff:(Math.random()-0.5)*2
+            }));
+
+            function resize(){
+                const r=section.getBoundingClientRect();
+                W=canvas.width=Math.round(r.width);
+                H=canvas.height=Math.round(r.height);
+                MAGNET_R=Math.min(W,H)*0.25;
+                RING_R=Math.min(W,H)*0.15;
+            }
+
+            let mouseX=-9999,mouseY=-9999,lastMove=0,vMX=0,vMY=0,running=false,lastTs=0;
+
+            section.addEventListener('mousemove',e=>{
+                const r=section.getBoundingClientRect();
+                mouseX=e.clientX-r.left; mouseY=e.clientY-r.top; lastMove=Date.now();
+            },{passive:true});
+
+            // scatter particles after first resize
+            function initParticles(){
+                particles.forEach(p=>{ p.mx=Math.random()*W; p.my=Math.random()*H; p.cx=p.mx; p.cy=p.my; });
+            }
+
+            function loop(ts){
+                if(!running)return;
+                requestAnimationFrame(loop);
+                if(ts-lastTs<FPS_MS)return;
+                lastTs=ts;
+                ctx.clearRect(0,0,W,H);
+                ctx.fillStyle='#ffe229';
+
+                const now=Date.now();
+                let destX,destY;
+                if(now-lastMove>2000){
+                    const t=now/1000;
+                    destX=W/2+Math.sin(t*0.5)*(W*0.28);
+                    destY=H/2+Math.cos(t*1.0)*(H*0.28);
+                } else { destX=mouseX; destY=mouseY; }
+                vMX+=(destX-vMX)*0.05;
+                vMY+=(destY-vMY)*0.05;
+
+                for(let i=0;i<COUNT;i++){
+                    const p=particles[i];
+                    p.t+=p.speed*0.5;
+                    const dx=p.mx-vMX, dy=p.my-vMY;
+                    const dist=Math.sqrt(dx*dx+dy*dy);
+                    let tx=p.mx,ty=p.my;
+                    if(dist<MAGNET_R){
+                        const ang=Math.atan2(dy,dx);
+                        const wave=Math.sin(p.t*WAVE_SPEED+ang)*RING_R*0.2;
+                        const dev=p.rOff*(5/(FIELD+0.1))*RING_R*0.15;
+                        const rr=RING_R+wave+dev;
+                        tx=vMX+rr*Math.cos(ang);
+                        ty=vMY+rr*Math.sin(ang);
+                    }
+                    p.cx+=(tx-p.cx)*LERP;
+                    p.cy+=(ty-p.cy)*LERP;
+                    const ang=Math.atan2(vMY-p.cy,vMX-p.cx);
+                    const dRing=Math.abs(Math.hypot(p.cx-vMX,p.cy-vMY)-RING_R);
+                    const sf=Math.max(0.15,1-dRing/(RING_R*0.9));
+                    const fs=sf*(0.8+Math.sin(p.t*PULSE_SPEED)*0.2)*PSIZE;
+                    const pw=2.5*fs, ph=8*fs;
+                    ctx.save();
+                    ctx.translate(p.cx,p.cy);
+                    ctx.rotate(ang+Math.PI*0.5);
+                    ctx.fillRect(-pw*0.5,-ph*0.5,pw,ph);
+                    ctx.restore();
+                }
+            }
+
+            new IntersectionObserver(entries=>{
+                if(entries[0].isIntersecting){ running=true; requestAnimationFrame(loop); }
+                else running=false;
+            },{threshold:0}).observe(section);
+
+            new ResizeObserver(()=>{ resize(); }).observe(section);
+            resize(); initParticles();
+        })();
+
     </script>
 </body>
 </html>
