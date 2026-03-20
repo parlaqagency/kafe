@@ -3112,7 +3112,7 @@ void main(){vec4 fc;mainImage(fc,gl_FragCoord.xy);gl_FragColor=fc;}`;
             const canvas  = document.getElementById('ghost-cursor-canvas');
             if (!section || !canvas) return;
 
-            const TRAIL  = 40;
+            const TRAIL  = 12;   // reduced from 40
             const COLOR  = [240/255, 167/255, 10/255]; // #f0a70a
             const BRIGHT = 2.0;
             const GRAIN  = 0.05;
@@ -3129,7 +3129,7 @@ void main(){vec4 fc;mainImage(fc,gl_FragCoord.xy);gl_FragColor=fc;}`;
             const VS = `attribute vec2 a_pos;void main(){gl_Position=vec4(a_pos,0.,1.);}`;
 
             const FS = `
-precision highp float;
+precision mediump float;
 #define TL ${TRAIL}
 uniform float iTime;
 uniform vec3  iRes;
@@ -3143,16 +3143,15 @@ uniform float iGra;
 
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);f*=f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
-float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(.877,.479,-.479,.877);for(int i=0;i<5;i++){v+=a*n(p);p=m*p*2.;a*=.5;}return v;}
+float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(.877,.479,-.479,.877);for(int i=0;i<3;i++){v+=a*n(p);p=m*p*2.;a*=.5;}return v;}
 
 vec4 blob(vec2 p,vec2 mp,float strength,float opa){
   vec2 q=vec2(fbm(p*iSca+iTime*.1),fbm(p*iSca+vec2(5.2,1.3)+iTime*.1));
-  vec2 r=vec2(fbm(p*iSca+q*1.5+iTime*.15),fbm(p*iSca+q*1.5+vec2(8.3,2.8)+iTime*.15));
-  float smoke=fbm(p*iSca+r*.8);
+  float smoke=fbm(p*iSca+q*.8);
   float rad=.5+.3*(1./iSca);
   float df=1.-smoothstep(0.,rad*opa,length(p-mp));
   float alpha=pow(smoke,2.5)*df;
-  vec3 c=mix(mix(iCol,vec3(1.),0.15),mix(iCol,vec3(.8,.9,1.),.25),sin(iTime*.5)*.5+.5);
+  vec3 c=mix(iCol,mix(iCol,vec3(1.),.15),sin(iTime*.5)*.5+.5);
   return vec4(c*alpha*strength,alpha*strength);
 }
 
@@ -3164,11 +3163,9 @@ void main(){
   for(int i=0;i<TL;i++){
     vec2 pm=(iPrev[i]*2.-1.)*vec2(iRes.x/iRes.y,1.);
     float t=pow(1.-float(i)/float(TL),2.);
-    if(t>.01){vec4 bt=blob(uv,pm,t*.8,iOpa);col+=bt.rgb;alp+=bt.a;}
+    if(t>.05){vec4 bt=blob(uv,pm,t*.8,iOpa);col+=bt.rgb;alp+=bt.a;}
   }
   col*=iBri;
-  float gr=h(gl_FragCoord.xy+iTime*999.)*2.-1.;
-  col+=gr*iGra*col;
   float oa=clamp(alp*iOpa,0.,1.);
   gl_FragColor=vec4(col*oa,oa);
 }`;
@@ -3206,19 +3203,32 @@ void main(){
             const mouse = {x:.5,y:.5}, vMouse = {x:.5,y:.5}, vel = {x:0,y:0};
             let lastMove = 0, opacity = 0, running = false, active = false;
 
+            const DPR = 0.4; // fixed low resolution — CSS stretches it, looks fine for smoke
+            let inView = false;
+
             function resize() {
                 const r = section.getBoundingClientRect();
-                const dpr = Math.min(window.devicePixelRatio||1, 1.5);
-                canvas.width  = r.width  * dpr;
-                canvas.height = r.height * dpr;
+                canvas.width  = r.width  * DPR;
+                canvas.height = r.height * DPR;
                 gl.viewport(0,0,canvas.width,canvas.height);
                 gl.uniform3f(uRes, canvas.width, canvas.height, 1);
                 const base=600, cur=Math.min(Math.max(1,r.width),Math.max(1,r.height));
                 gl.uniform1f(uSca, Math.max(.5,Math.min(2,cur/base)));
             }
 
+            // Pause when section is off screen
+            new IntersectionObserver(e => { inView = e[0].isIntersecting; }, {threshold:0}).observe(section);
+
             const t0 = performance.now();
-            function loop() {
+            const FPS_INTERVAL = 1000 / 30; // 30fps cap
+            let lastFrame = 0;
+
+            function loop(ts) {
+                requestAnimationFrame(loop);
+                if (!inView) return;
+                if (ts - lastFrame < FPS_INTERVAL) return;
+                lastFrame = ts;
+
                 const now = performance.now(), t = (now - t0) / 1000;
                 if (active) {
                     vel.x = mouse.x - vMouse.x; vel.y = mouse.y - vMouse.y;
@@ -3230,6 +3240,8 @@ void main(){
                     const dt = now - lastMove;
                     if (dt > FADE_DELAY) opacity = Math.max(0, 1-(dt-FADE_DELAY)/FADE_DUR);
                 }
+                if (!active && opacity <= 0.001) return; // idle — skip render
+
                 head = (head+1) % TRAIL;
                 trail[head*2] = vMouse.x; trail[head*2+1] = vMouse.y;
                 const ord = new Float32Array(TRAIL*2);
@@ -3241,9 +3253,6 @@ void main(){
                 gl.uniform1f(uOpa, opacity);
                 gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-                if (!active && opacity <= 0.001) { running=false; return; }
-                requestAnimationFrame(loop);
             }
             function start() { if (!running){running=true;requestAnimationFrame(loop);} }
 
