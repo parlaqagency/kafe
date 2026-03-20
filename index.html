@@ -340,7 +340,8 @@
 
         /* Mobile: blends section 100vh — auto-play animation, no scroll space needed */
         @media (max-width: 767px) {
-            #blends-animation { height: 100vh !important; }
+            #blends-animation { height: auto !important; min-height: 100vh; }
+            #blends-sticky { height: auto !important; min-height: 100vh; padding: 80px 0 40px; }
         }
 
         /* Custom Cursor */
@@ -2535,14 +2536,27 @@
             const ctx = canvas.getContext('2d');
 
             function sizeCanvas() {
-                const padding = isMobile ? 16 : 80; // px her yanda
-                const maxW    = isMobile ? window.innerWidth - padding * 2 : Math.min(window.innerWidth - padding * 2, window.innerHeight * 16 / 9);
-                const w       = Math.round(maxW);
-                const h       = Math.round(w * 9 / 16);
-                canvas.width        = w * dpr;
-                canvas.height       = h * dpr;
-                canvas.style.width  = w + 'px';
-                canvas.style.height = h + 'px';
+                if (isMobile) {
+                    // Portrait canvas on mobile to match coffee bag frames
+                    const padding = 24;
+                    const maxW = window.innerWidth - padding * 2;
+                    const w = Math.round(maxW);
+                    const h = Math.round(w * 4 / 3); // 3:4 portrait ratio
+                    canvas.width        = w * dpr;
+                    canvas.height       = h * dpr;
+                    canvas.style.width  = w + 'px';
+                    canvas.style.height = h + 'px';
+                } else {
+                    // Landscape 16:9 on desktop
+                    const padding = 80;
+                    const maxW = Math.min(window.innerWidth - padding * 2, window.innerHeight * 16 / 9);
+                    const w = Math.round(maxW);
+                    const h = Math.round(w * 9 / 16);
+                    canvas.width        = w * dpr;
+                    canvas.height       = h * dpr;
+                    canvas.style.width  = w + 'px';
+                    canvas.style.height = h + 'px';
+                }
                 ctx.scale(dpr, dpr);
             }
             sizeCanvas();
