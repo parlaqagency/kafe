@@ -542,8 +542,9 @@
             #blends-animation .text-center { margin-bottom: 1rem !important; }
         }
     </style>
-    <section id="blends-animation" class="bg-sectionDark py-20">
-        <div class="container mx-auto px-6">
+    <section id="blends-animation" class="bg-sectionDark py-20" style="position:relative;overflow:hidden;">
+        <canvas id="blends-bg-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+        <div class="container mx-auto px-6" style="position:relative;z-index:1;">
             <div class="text-center mb-10">
                 <span style="color:#c9a84c;font-family:system-ui,sans-serif;font-size:0.65rem;letter-spacing:0.35em;text-transform:uppercase;display:block;margin-bottom:12px;">İMZA BLENDLER</span>
                 <h2 style="color:#fff;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:0.06em;margin:0 0 8px;">HER ÇEKİRDEĞİN HİKAYESİ</h2>
@@ -2837,6 +2838,119 @@
             }
             animateParticles();
         }
+
+        // ── BLENDS ANTIGRAVITY BACKGROUND ──────────────────────────────────
+        (function () {
+            const section = document.getElementById('blends-animation');
+            const canvas  = document.getElementById('blends-bg-canvas');
+            if (!section || !canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const COUNT        = 300;
+            const LERP         = 0.05;
+            const WAVE_SPEED   = 0.4;
+            const PULSE_SPEED  = 3;
+            const FIELD_STR    = 10;
+
+            let W, H, magnetR, ringR, waveAmp;
+            let particles = [];
+            let mouse       = { x: -9999, y: -9999 };
+            let vMouse      = { x: -9999, y: -9999 };
+            let lastMove    = 0;
+            let clock       = 0;
+
+            function resize() {
+                W = canvas.width  = section.offsetWidth;
+                H = canvas.height = section.offsetHeight;
+                magnetR = Math.min(W, H) * 0.30;
+                ringR   = Math.min(W, H) * 0.14;
+                waveAmp = Math.min(W, H) * 0.025;
+                init();
+            }
+
+            function init() {
+                particles = [];
+                for (let i = 0; i < COUNT; i++) {
+                    const x = Math.random() * W;
+                    const y = Math.random() * H;
+                    particles.push({ t: Math.random() * 100, spd: 0.01 + Math.random() / 200,
+                        hx: x, hy: y, cx: x, cy: y, ro: (Math.random() - 0.5) * 2 });
+                }
+            }
+
+            function drawCapsule(x, y, angle, size, alpha) {
+                if (size < 0.5) return;
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(angle);
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#c9873a';
+                const r = size * 0.35, h = size * 1.1;
+                ctx.beginPath();
+                ctx.arc(0, -h / 2, r, Math.PI, 0);
+                ctx.lineTo(r, h / 2);
+                ctx.arc(0, h / 2, r, 0, Math.PI);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function frame() {
+                requestAnimationFrame(frame);
+                clock += 0.016;
+                ctx.clearRect(0, 0, W, H);
+
+                let destX = mouse.x, destY = mouse.y;
+                if (Date.now() - lastMove > 2000) {
+                    destX = W / 2 + Math.sin(clock * 0.5) * W * 0.25;
+                    destY = H / 2 + Math.cos(clock)       * H * 0.25;
+                }
+                vMouse.x += (destX - vMouse.x) * 0.05;
+                vMouse.y += (destY - vMouse.y) * 0.05;
+
+                const tx = vMouse.x, ty = vMouse.y;
+
+                for (const p of particles) {
+                    p.t += p.spd / 2;
+                    const dx = p.hx - tx, dy = p.hy - ty;
+                    const dist = Math.hypot(dx, dy);
+                    let tgX = p.hx, tgY = p.hy;
+
+                    if (dist < magnetR) {
+                        const a = Math.atan2(dy, dx);
+                        const wave = Math.sin(p.t * WAVE_SPEED + a) * waveAmp;
+                        const dev  = p.ro * (5 / (FIELD_STR + 0.1));
+                        const r    = ringR + wave + dev;
+                        tgX = tx + r * Math.cos(a);
+                        tgY = ty + r * Math.sin(a);
+                    }
+
+                    p.cx += (tgX - p.cx) * LERP;
+                    p.cy += (tgY - p.cy) * LERP;
+
+                    const drawAngle  = Math.atan2(p.cy - ty, p.cx - tx) + Math.PI / 2;
+                    const dFromRing  = Math.abs(Math.hypot(p.cx - tx, p.cy - ty) - ringR);
+                    const scale      = Math.max(0.2, Math.min(1, 1 - dFromRing / (ringR * 0.9)));
+                    const pulse      = 0.8 + Math.sin(p.t * PULSE_SPEED) * 0.2;
+                    const size       = scale * pulse * 7;
+                    const alpha      = (0.12 + scale * 0.38) * 0.9;
+
+                    drawCapsule(p.cx, p.cy, drawAngle, size, alpha);
+                }
+            }
+
+            section.addEventListener('mousemove', e => {
+                const r = canvas.getBoundingClientRect();
+                mouse.x = e.clientX - r.left;
+                mouse.y = e.clientY - r.top;
+                lastMove = Date.now();
+            });
+            section.addEventListener('mouseleave', () => { lastMove = 0; });
+
+            new ResizeObserver(resize).observe(section);
+            resize();
+            frame();
+        })();
 
     </script>
 </body>
