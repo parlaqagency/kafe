@@ -1119,7 +1119,7 @@
                 #menu-items-grid {
                     display: flex !important;
                     flex-direction: row !important;
-                    width: 300% !important;
+                    width: 300vw !important;
                     will-change: transform;
                     grid-template-columns: unset !important;
                     min-height: unset;
@@ -1127,13 +1127,14 @@
                     padding: 0 !important;
                 }
                 .menu-mobile-panel {
-                    width: 33.333% !important;
-                    flex-shrink: 0;
+                    width: 100vw !important;
+                    flex-shrink: 0 !important;
                     padding: 0 16px 20px;
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 12px;
+                    display: grid !important;
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 12px !important;
                     align-content: start;
+                    box-sizing: border-box;
                 }
                 .menu-card {
                     width: 100% !important;
@@ -1336,31 +1337,31 @@
 
                 function goTo(idx, animate) {
                     activeCat = Math.max(0, Math.min(2, idx));
-                    const offset = -(activeCat * (100 / 3));
+                    const vw = window.innerWidth;
+                    const offset = -(activeCat * vw);
                     if (animate) {
-                        grid.style.transition = 'transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94)';
+                        grid.style.transition = "transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94)";
                     } else {
-                        grid.style.transition = 'none';
+                        grid.style.transition = "none";
                     }
-                    grid.style.transform = `translateX(${offset}%)`;
-                    tabs.forEach((t, i) => t.classList.toggle('active', i === activeCat));
-                    document.getElementById('menu').style.backgroundColor = BG[activeCat];
+                    grid.style.transform = "translateX(" + offset + "px)";
+                    tabs.forEach((t, i) => t.classList.toggle("active", i === activeCat));
+                    document.getElementById("menu").style.backgroundColor = BG[activeCat];
                     bgLabel.textContent = LABELS[activeCat];
-                    countEl.textContent = `${String(categories[activeCat].items.length).padStart(2,'0')} ürün`;
+                    countEl.textContent = String(categories[activeCat].items.length).padStart(2,"0") + " ürün";
                 }
                 goTo(0, false);
 
                 // Tab clicks
                 tabs.forEach((tab, i) => {
-                    tab.addEventListener('click', () => goTo(i, true));
+                    tab.addEventListener("click", () => goTo(i, true));
                 });
 
-                // Touch swipe - listen on section to avoid child element conflicts
+                // Touch swipe on section level
                 const menuSection = document.getElementById("menu");
                 let tStartX = 0, tStartY = 0, tCurX = 0, tActive = false, tLocked = false;
 
                 menuSection.addEventListener("touchstart", e => {
-                    // Ignore taps on tab buttons
                     if (e.target.closest(".menu-tab-btn")) return;
                     tStartX = tCurX = e.touches[0].clientX;
                     tStartY = e.touches[0].clientY;
@@ -1373,16 +1374,11 @@
                     tCurX = e.touches[0].clientX;
                     const dx = tCurX - tStartX;
                     const dy = e.touches[0].clientY - tStartY;
-                    if (!tLocked && Math.abs(dy) > Math.abs(dx) + 10) {
-                        tLocked = true; tActive = false;
-                        goTo(activeCat, true); // snap back
-                        return;
-                    }
+                    if (!tLocked && Math.abs(dy) > Math.abs(dx) + 10) { tLocked = true; tActive = false; goTo(activeCat, true); return; }
                     if (Math.abs(dx) < 5) return;
-                    tLocked = false;
                     e.preventDefault();
-                    const baseOffset = -(activeCat * (100 / 3));
-                    grid.style.transform = "translateX(calc(" + baseOffset + "% + " + dx + "px))";
+                    const base = -(activeCat * window.innerWidth);
+                    grid.style.transform = "translateX(" + (base + dx) + "px)";
                 }, { passive: false });
 
                 menuSection.addEventListener("touchend", e => {
