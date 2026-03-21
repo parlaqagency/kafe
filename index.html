@@ -1115,38 +1115,33 @@
             }
             @media (max-width: 768px) {
                 .menu-header { padding: 40px 24px 0; }
-                .menu-grid-wrapper { padding: 32px 0 0; overflow: hidden; position: relative; }
+                .menu-grid-wrapper { padding: 32px 0 0; overflow: visible; }
                 #menu-items-grid {
                     display: flex !important;
-                    flex-direction: row !important;
-                    width: 300vw !important;
-                    will-change: transform;
+                    flex-direction: row;
+                    overflow-x: auto;
+                    scroll-snap-type: x mandatory;
+                    -webkit-overflow-scrolling: touch;
+                    scrollbar-width: none;
+                    gap: 14px;
+                    padding: 0 20px 20px;
                     grid-template-columns: unset !important;
                     min-height: unset;
-                    gap: 0 !important;
-                    padding: 0 !important;
+                    width: auto !important;
                 }
-                .menu-mobile-panel {
-                    width: 100vw !important;
-                    flex-shrink: 0 !important;
-                    padding: 0 16px 20px;
-                    display: grid !important;
-                    grid-template-columns: 1fr 1fr !important;
-                    gap: 12px !important;
-                    align-content: start;
-                    box-sizing: border-box;
-                }
+                #menu-items-grid::-webkit-scrollbar { display: none; }
+                .menu-mobile-panel { display: contents; }
                 .menu-card {
-                    width: 100% !important;
-                    flex: none !important;
-                    height: 200px !important;
+                    flex: 0 0 76vw !important;
+                    width: 76vw !important;
+                    scroll-snap-align: start;
+                    height: 340px !important;
                     aspect-ratio: unset !important;
-                    scroll-snap-align: unset !important;
                 }
-                .menu-card-name { font-size: 13px; }
-                .menu-card-note { font-size: 9px; }
-                .menu-card-overlay { padding: 10px; }
-                .menu-card-bottom { padding: 8px 10px; }
+                .menu-card-name { font-size: 16px; }
+                .menu-card-note { font-size: 10px; }
+                .menu-card-overlay { padding: 16px; }
+                .menu-card-bottom { padding: 12px 16px; }
                 .menu-tab-btn { padding: 10px 14px; font-size: 13px; letter-spacing: 0.15em; }
             }
         </style>
@@ -1313,88 +1308,81 @@
             const isMobileMenu = window.innerWidth < 768;
 
             if (isMobileMenu) {
-                let activeCat = 0;
-                const wrapper = grid.parentElement; // .menu-grid-wrapper
+                let activeMobileCat = 0;
+                let isTransitioning = false;
 
-                // Pre-render all 3 categories into panels
-                function buildPanels() {
-                    grid.innerHTML = categories.map((cat, idx) => {
-                        const cards = cat.items.map(item => `
-                            <div class="menu-card" data-cat="${idx}" style="position:relative;overflow:hidden;">
-                                <img class="menu-card-img" src="${item.img}" alt="${item.name}" loading="lazy">
-                                <span class="menu-card-badge">${LABELS[idx]}</span>
-                                <div class="menu-card-bottom">
-                                    <h3 class="menu-card-name">${item.name}</h3>
-                                    <p class="menu-card-note">${item.note}</p>
-                                </div>
-                                <div class="menu-card-line"></div>
-                            </div>
-                        `).join('');
-                        return `<div class="menu-mobile-panel">${cards}</div>`;
-                    }).join('');
+                function renderMobileCat(idx, dir) {
+                    if (isTransitioning || idx === activeMobileCat) return;
+                    isTransitioning = true;
+                    activeMobileCat = idx;
+                    const cat = categories[idx];
+                    tabs.forEach((t,i) => t.classList.toggle("active", i===idx));
+                    document.getElementById("menu").style.backgroundColor = BG[idx];
+                    bgLabel.textContent = LABELS[idx];
+                    countEl.textContent = String(cat.items.length).padStart(2,"0") + " ürün";
+                    grid.style.transition = "opacity 0.18s ease, transform 0.18s ease";
+                    grid.style.opacity = "0";
+                    grid.style.transform = dir === "next" ? "translateX(-20px)" : "translateX(20px)";
+                    setTimeout(() => {
+                        grid.innerHTML = cat.items.map(item => ).join("");
+                        grid.scrollLeft = 0;
+                        grid.style.transform = dir === "next" ? "translateX(20px)" : "translateX(-20px)";
+                        grid.style.opacity = "0";
+                        requestAnimationFrame(() => requestAnimationFrame(() => {
+                            grid.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+                            grid.style.opacity = "1";
+                            grid.style.transform = "translateX(0)";
+                            setTimeout(() => { grid.style.transition = ""; isTransitioning = false; }, 260);
+                        }));
+                    }, 180);
                 }
-                buildPanels();
-
-                function goTo(idx, animate) {
-                    activeCat = Math.max(0, Math.min(2, idx));
-                    const vw = window.innerWidth;
-                    const offset = -(activeCat * vw);
-                    if (animate) {
-                        grid.style.transition = "transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94)";
-                    } else {
-                        grid.style.transition = "none";
-                    }
-                    grid.style.transform = "translateX(" + offset + "px)";
-                    tabs.forEach((t, i) => t.classList.toggle("active", i === activeCat));
-                    document.getElementById("menu").style.backgroundColor = BG[activeCat];
-                    bgLabel.textContent = LABELS[activeCat];
-                    countEl.textContent = String(categories[activeCat].items.length).padStart(2,"0") + " ürün";
-                }
-                goTo(0, false);
 
                 // Tab clicks
-                tabs.forEach((tab, i) => {
-                    tab.addEventListener("click", () => goTo(i, true));
-                });
+                tabs.forEach((tab,i) => tab.addEventListener("click", () => {
+                    if (i > activeMobileCat) renderMobileCat(i, "next");
+                    else if (i < activeMobileCat) renderMobileCat(i, "prev");
+                }));
 
-                // Touch swipe on section level
-                const menuSection = document.getElementById("menu");
-                let tStartX = 0, tStartY = 0, tCurX = 0, tActive = false, tLocked = false;
-
-                menuSection.addEventListener("touchstart", e => {
-                    if (e.target.closest(".menu-tab-btn")) return;
-                    tStartX = tCurX = e.touches[0].clientX;
-                    tStartY = e.touches[0].clientY;
-                    tActive = true; tLocked = false;
-                    grid.style.transition = "none";
+                // Scroll to end → next category
+                let scrollTimer;
+                grid.addEventListener("scroll", () => {
+                    clearTimeout(scrollTimer);
+                    scrollTimer = setTimeout(() => {
+                        if (grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 20 && activeMobileCat < 2)
+                            renderMobileCat(activeMobileCat + 1, "next");
+                    }, 350);
                 }, { passive: true });
 
-                menuSection.addEventListener("touchmove", e => {
-                    if (!tActive) return;
-                    tCurX = e.touches[0].clientX;
-                    const dx = tCurX - tStartX;
-                    const dy = e.touches[0].clientY - tStartY;
-                    if (!tLocked && Math.abs(dy) > Math.abs(dx) + 10) { tLocked = true; tActive = false; goTo(activeCat, true); return; }
-                    if (Math.abs(dx) < 5) return;
-                    e.preventDefault();
-                    const base = -(activeCat * window.innerWidth);
-                    grid.style.transform = "translateX(" + (base + dx) + "px)";
+                // Swipe right from start → prev category
+                let swX = 0, swY = 0, swIntent = false, swBlocked = false;
+                grid.addEventListener("touchstart", e => {
+                    swX = e.touches[0].clientX;
+                    swY = e.touches[0].clientY;
+                    swIntent = false; swBlocked = false;
+                }, { passive: true });
+                grid.addEventListener("touchmove", e => {
+                    if (swBlocked) return;
+                    const dx = e.touches[0].clientX - swX;
+                    const dy = e.touches[0].clientY - swY;
+                    if (Math.abs(dy) > Math.abs(dx) + 8) { swBlocked = true; return; }
+                    if (dx > 15 && grid.scrollLeft <= 2 && activeMobileCat > 0) {
+                        swIntent = true;
+                        e.preventDefault();
+                    } else if (dx <= 15) {
+                        swBlocked = true;
+                    }
                 }, { passive: false });
-
-                menuSection.addEventListener("touchend", e => {
-                    if (!tActive) return;
-                    tActive = false;
-                    const dx = tCurX - tStartX;
-                    if (!tLocked && dx < -50 && activeCat < 2) goTo(activeCat + 1, true);
-                    else if (!tLocked && dx > 50 && activeCat > 0) goTo(activeCat - 1, true);
-                    else goTo(activeCat, true);
+                grid.addEventListener("touchend", e => {
+                    if (swIntent && e.changedTouches[0].clientX - swX > 40 && activeMobileCat > 0)
+                        renderMobileCat(activeMobileCat - 1, "prev");
+                    swIntent = false;
                 }, { passive: true });
+
+                renderMobileCat(0, "next");
+                isTransitioning = false;
+
             } else {
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        renderCards(parseInt(tab.dataset.index));
-                    });
-                });
+                tabs.forEach(tab => tab.addEventListener("click", () => renderCards(parseInt(tab.dataset.index))));
                 renderCards(0);
             }
         })();
