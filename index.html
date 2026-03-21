@@ -1383,17 +1383,30 @@
                 }, { passive: true });
 
                 // Swipe right from start → go to previous category
-                let touchStartX = 0;
-                let touchStartScrollLeft = 0;
+                let swTouchX = 0, swTouchY = 0, swLocked = false, swPrevIntent = false;
                 grid.addEventListener('touchstart', e => {
-                    touchStartX = e.touches[0].clientX;
-                    touchStartScrollLeft = grid.scrollLeft;
+                    swTouchX = e.touches[0].clientX;
+                    swTouchY = e.touches[0].clientY;
+                    swLocked = false; swPrevIntent = false;
                 }, { passive: true });
+                grid.addEventListener('touchmove', e => {
+                    if (swLocked) return;
+                    const dx = e.touches[0].clientX - swTouchX;
+                    const dy = e.touches[0].clientY - swTouchY;
+                    if (Math.abs(dx) < Math.abs(dy)) { swLocked = true; return; } // vertical scroll
+                    if (dx > 12 && grid.scrollLeft <= 4 && activeMobileCat > 0) {
+                        swPrevIntent = true;
+                        e.preventDefault();
+                    } else {
+                        swLocked = true;
+                    }
+                }, { passive: false });
                 grid.addEventListener('touchend', e => {
-                    const dx = e.changedTouches[0].clientX - touchStartX;
-                    if (touchStartScrollLeft <= 8 && dx > 50 && activeMobileCat > 0) {
+                    const dx = e.changedTouches[0].clientX - swTouchX;
+                    if (swPrevIntent && dx > 40 && activeMobileCat > 0) {
                         renderMobileCat(activeMobileCat - 1, 'prev');
                     }
+                    swPrevIntent = false;
                 }, { passive: true });
 
                 // Initial render
