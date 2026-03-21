@@ -1376,13 +1376,24 @@
                     clearTimeout(scrollEndTimer);
                     scrollEndTimer = setTimeout(() => {
                         const atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 32;
-                        const atStart = grid.scrollLeft <= 8;
                         if (atEnd && activeMobileCat < categories.length - 1) {
                             renderMobileCat(activeMobileCat + 1, 'next');
-                        } else if (atStart && activeMobileCat > 0 && grid.scrollWidth > grid.clientWidth) {
-                            // only go back if user actually scrolled (not on initial render)
                         }
                     }, 400);
+                }, { passive: true });
+
+                // Swipe right from start → go to previous category
+                let touchStartX = 0;
+                let touchStartScrollLeft = 0;
+                grid.addEventListener('touchstart', e => {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartScrollLeft = grid.scrollLeft;
+                }, { passive: true });
+                grid.addEventListener('touchend', e => {
+                    const dx = e.changedTouches[0].clientX - touchStartX;
+                    if (touchStartScrollLeft <= 8 && dx > 50 && activeMobileCat > 0) {
+                        renderMobileCat(activeMobileCat - 1, 'prev');
+                    }
                 }, { passive: true });
 
                 // Initial render
