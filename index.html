@@ -1324,7 +1324,15 @@
                     grid.style.opacity = "0";
                     grid.style.transform = dir === "next" ? "translateX(-20px)" : "translateX(20px)";
                     setTimeout(() => {
-                        grid.innerHTML = cat.items.map(item => ).join("");
+                        grid.innerHTML = cat.items.map(item => 
+                            '<div class="menu-card" style="position:relative;overflow:hidden;">'
+                            + '<img class="menu-card-img" src="' + item.img + '" alt="' + item.name + '" loading="lazy">'
+                            + '<span class="menu-card-badge">' + LABELS[idx] + '</span>'
+                            + '<div class="menu-card-bottom">'
+                            + '<h3 class="menu-card-name">' + item.name + '</h3>'
+                            + '<p class="menu-card-note">' + item.note + '</p>'
+                            + '</div><div class="menu-card-line"></div></div>'
+                        ).join('');
                         grid.scrollLeft = 0;
                         grid.style.transform = dir === "next" ? "translateX(20px)" : "translateX(-20px)";
                         grid.style.opacity = "0";
